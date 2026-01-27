@@ -1,3 +1,4 @@
+import 'package:fitgympro/Riverpod/Controllers/HomeViewController/home_view_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'SplashController/splash_view_controller.dart';
@@ -15,4 +16,9 @@ class AllControllers {
       StateNotifierProvider<OnboardViewController, OnboardViewModel>((ref) {
         return OnboardViewController(ref);
       });
+
+  static final homeViewController =
+      StateNotifierProvider<HomeViewController, HomeState>(
+        (ref) => HomeViewController(),
+      );
 }
