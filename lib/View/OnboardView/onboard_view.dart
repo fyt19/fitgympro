@@ -18,7 +18,10 @@ class _OnboardViewState extends ConsumerState<OnboardView> {
   Widget build(BuildContext context) {
     final onboardState = ref.watch(AllControllers.onboardViewController);
     final notifier = ref.read(AllControllers.onboardViewController.notifier);
-    final currentStep = notifier.steps[onboardState.currentIndex];
+    final int safeIndex = onboardState.currentIndex >= notifier.steps.length
+        ? notifier.steps.length - 1
+        : onboardState.currentIndex;
+    final currentStep = notifier.steps[safeIndex];
 
     return Scaffold(
       backgroundColor: MyColors.darkBg,
