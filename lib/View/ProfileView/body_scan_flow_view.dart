@@ -176,7 +176,7 @@ class _BodyScanIntroViewState extends State<BodyScanIntroView> {
       children: [
         const CircleAvatar(
           radius: 60,
-          backgroundImage: AssetImage("assets/images/profile_user.jpg"),
+          backgroundImage: AssetImage("assets/images/profile_user.png"),
         ),
         const SizedBox(height: 20),
         const Text(

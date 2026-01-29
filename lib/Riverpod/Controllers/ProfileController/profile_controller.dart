@@ -13,7 +13,7 @@ class ProfileState {
     this.name = "Jhon Doe",
     this.email = "jhondoe@gmail.com",
     this.photoUrl =
-        "assets/images/profile_user.jpg", // Assets'e bir profil fotosu eklemelisin
+        "assets/images/profile_user.png", // Assets'e bir profil fotosu eklemelisin
     this.notificationsEnabled = true,
     this.weight = "80",
     this.height = "186.5",

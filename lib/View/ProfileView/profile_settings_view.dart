@@ -30,7 +30,7 @@ class ProfileSettingsView extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage("assets/images/profile_user.jpg"),
+                  backgroundImage: AssetImage("assets/images/profile_user.png"),
                 ),
                 Container(
                   padding: const EdgeInsets.all(5),

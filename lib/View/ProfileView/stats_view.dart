@@ -202,11 +202,11 @@ class StatsView extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _buildPhotoCard("Before", "assets/images/before.jpg"),
+                  child: _buildPhotoCard("Before", "assets/images/before.png"),
                 ), // Bu resmi assets'e ekle
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _buildPhotoCard("After", "assets/images/after.jpg"),
+                  child: _buildPhotoCard("After", "assets/images/after.png"),
                 ), // Bu resmi assets'e ekle
               ],
             ),
