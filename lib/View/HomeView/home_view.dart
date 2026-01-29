@@ -2,30 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../theme/my_colors.dart';
 import '../../Riverpod/Controllers/all_controllers.dart';
-import '../BottomNavBarView/bottom_navbar_view.dart';
+import '../../Riverpod/Controllers/HomeViewController/home_view_controller.dart';
+// import '../BottomNavBarView/bottom_navbar_view.dart';
 
 class HomeView extends ConsumerWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // [cite: 192] Controllers altından veriyi çekiyoruz
-    final homeState = ref.watch(AllControllers.homeViewController);
+    final HomeState homeState = ref.watch(AllControllers.homeViewController);
 
     return Scaffold(
-      backgroundColor: const Color(0xffF2F5FC), // [cite: 322]
+      backgroundColor: const Color(0xffF2F5FC),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(homeState),
+              // HEADER: Context parametresi eklendi
+              _buildHeader(context, homeState),
+
               const SizedBox(height: 20),
               _buildSearchBox(),
+
               const SizedBox(height: 25),
               _buildSectionTitle("Popular Workouts"),
               _buildPopularWorkouts(),
+
               const SizedBox(height: 25),
               _buildSectionTitle("Quick Training"),
               _buildTrainingCard(
@@ -40,32 +44,41 @@ class HomeView extends ConsumerWidget {
                 "20 min.",
                 "assets/images/bench_press.jpg",
               ),
+
               const SizedBox(height: 25),
-              _buildAiBodyScanCard(), // [cite: 169]
+              _buildAiBodyScanCard(),
+
               const SizedBox(height: 25),
               _buildSectionTitle("Lose Weight"),
-              _buildLoseWeightList(), // Yatay kaydırmalı
+              _buildLoseWeightList(),
+
               const SizedBox(height: 25),
-              _buildWeeklyProgressCard(homeState), // [cite: 138]
+              _buildWeeklyProgressCard(homeState),
+
               const SizedBox(height: 25),
-              _buildStrengthCountdownCard(), // Tasarımdaki geri sayım alanı
+              _buildStrengthCountdownCard(),
+
               const SizedBox(height: 25),
-              _buildPremiumBanner(), // En alttaki upgrade kartı
+              // Premium değilse banner göster
+              if (!homeState.isPremium) _buildPremiumBanner(),
+
+              const SizedBox(height: 40),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: MyBottomNavbarView(
-        selectedIndex: 0,
-        onTap: (index) {
-          // Sayfa değiştirme logic'i buraya gelecek
-        },
-      ),
+      // bottomNavigationBar: MyBottomNavbarView(
+      //   selectedIndex: 0,
+      //   onTap: (index) {
+      //     // Sayfa geçişleri
+      //   },
+      // ),
     );
   }
 
-  // HEADER [cite: 84, 87]
-  Widget _buildHeader(homeState) {
+  // --- WIDGET METODLARI ---
+
+  Widget _buildHeader(BuildContext context, HomeState homeState) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -91,10 +104,13 @@ class HomeView extends ConsumerWidget {
                   : MyColors.primaryRed,
             ),
             const SizedBox(width: 10),
-            const Icon(
-              Icons.notifications_none_outlined,
-              size: 28,
-              color: MyColors.darkBg,
+            GestureDetector(
+              onTap: () => Navigator.pushNamed(context, '/notifications'),
+              child: const Icon(
+                Icons.notifications_none_outlined,
+                size: 28,
+                color: MyColors.darkBg,
+              ),
             ),
           ],
         ),
@@ -161,174 +177,56 @@ class HomeView extends ConsumerWidget {
     );
   }
 
-  // LOSE WEIGHT LIST
-  Widget _buildLoseWeightList() {
-    final List<Map<String, String>> items = [
-      {"title": "Jumping\nRope", "img": "assets/images/jumping_rose.jpg"},
-      {"title": "Running", "img": "assets/images/running.png"},
-      {"title": "Stair\nClimber", "img": "assets/images/stair.png"},
-    ];
+  Widget _buildPopularWorkouts() {
     return SizedBox(
       height: 180,
-      child: ListView.builder(
+      child: ListView(
         scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        itemBuilder: (context, index) => Container(
-          width: 160,
-          margin: const EdgeInsets.only(right: 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25),
-            image: DecorationImage(
-              image: AssetImage(items[index]['img']!),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              color: Colors.black26,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      items[index]['title']!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const Icon(
-                      Icons.arrow_circle_right,
-                      color: MyColors.primaryRed,
-                      size: 20,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // WEEKLY PROGRESS [cite: 138]
-  Widget _buildWeeklyProgressCard(homeState) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: MyColors.darkBg,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Row(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
-                  children: [
-                    Text(
-                      "Today • 25 Nov",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                _ProgressRow(
-                  Icons.nightlight_round,
-                  "7h 13m",
-                  "Sleep Time",
-                  Colors.blue,
-                ),
-                _ProgressRow(
-                  Icons.favorite,
-                  "56 bpm",
-                  "Avg. heart rate",
-                  Colors.red,
-                ),
-                _ProgressRow(
-                  Icons.rocket_launch,
-                  "1h 20min",
-                  "Exercise",
-                  Colors.green,
-                ),
-              ],
-            ),
+          _popularItem(
+            "Strength",
+            "60 Exercises",
+            "assets/images/training0.png",
           ),
-          _buildCircularCharts(homeState),
+          _popularItem("Cardio", "15 Exercises", "assets/images/training1.jpg"),
         ],
       ),
     );
   }
 
-  Widget _buildCircularCharts(homeState) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          width: 100,
-          height: 100,
-          child: CircularProgressIndicator(
-            value: homeState.sleepProgress,
-            color: Colors.green,
-            strokeWidth: 8,
-            backgroundColor: Colors.white10,
-          ),
+  Widget _popularItem(String t, String s, String i) {
+    return Container(
+      width: 280,
+      margin: const EdgeInsets.only(right: 15),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        image: DecorationImage(image: AssetImage(i), fit: BoxFit.cover),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(25),
+          color: Colors.black45,
         ),
-        SizedBox(
-          width: 75,
-          height: 75,
-          child: CircularProgressIndicator(
-            value: 0.52,
-            color: Colors.red,
-            strokeWidth: 8,
-            backgroundColor: Colors.white10,
-          ),
-        ),
-        SizedBox(
-          width: 50,
-          height: 50,
-          child: CircularProgressIndicator(
-            value: 0.27,
-            color: Colors.blue,
-            strokeWidth: 8,
-            backgroundColor: Colors.white10,
-          ),
-        ),
-        const Column(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              Icons.local_fire_department,
-              color: MyColors.primaryRed,
-              size: 20,
-            ),
             Text(
-              "2250 kcal",
-              style: TextStyle(
+              t,
+              style: const TextStyle(
                 color: Colors.white,
-                fontSize: 10,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            Text(s, style: const TextStyle(color: Colors.white70)),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  // TRAINING CARDS
   Widget _buildTrainingCard(
     String title,
     String kcal,
@@ -390,8 +288,6 @@ class HomeView extends ConsumerWidget {
             onPressed: () {},
             style: ElevatedButton.styleFrom(
               backgroundColor: MyColors.primaryRed,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),
@@ -410,7 +306,6 @@ class HomeView extends ConsumerWidget {
     );
   }
 
-  // AI SCAN CARD [cite: 169]
   Widget _buildAiBodyScanCard() {
     return Container(
       padding: const EdgeInsets.all(15),
@@ -464,7 +359,166 @@ class HomeView extends ConsumerWidget {
     );
   }
 
-  // STRENGTH COUNTDOWN CARD
+  Widget _buildLoseWeightList() {
+    final List<Map<String, String>> items = [
+      {"title": "Jumping\nRope", "img": "assets/images/jumping_rose.jpg"},
+      {"title": "Running", "img": "assets/images/running.png"},
+      {"title": "Stair\nClimber", "img": "assets/images/stair.png"},
+    ];
+    return SizedBox(
+      height: 180,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: items.length,
+        itemBuilder: (context, index) => Container(
+          width: 160,
+          margin: const EdgeInsets.only(right: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            image: DecorationImage(
+              image: AssetImage(items[index]['img']!),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25),
+              color: Colors.black26,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      items[index]['title']!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_circle_right,
+                      color: MyColors.primaryRed,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWeeklyProgressCard(HomeState homeState) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: MyColors.darkBg,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Today • 25 Nov",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                _ProgressRow(
+                  Icons.nightlight_round,
+                  "7h 13m",
+                  "Sleep Time",
+                  Colors.blue,
+                ),
+                _ProgressRow(
+                  Icons.favorite,
+                  "56 bpm",
+                  "Avg. heart rate",
+                  Colors.red,
+                ),
+                _ProgressRow(
+                  Icons.rocket_launch,
+                  "1h 20min",
+                  "Exercise",
+                  Colors.green,
+                ),
+              ],
+            ),
+          ),
+          _buildCircularCharts(homeState),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCircularCharts(HomeState homeState) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 100,
+          height: 100,
+          child: CircularProgressIndicator(
+            value: homeState.sleepProgress,
+            color: Colors.green,
+            strokeWidth: 8,
+            backgroundColor: Colors.white10,
+          ),
+        ),
+        SizedBox(
+          width: 75,
+          height: 75,
+          child: CircularProgressIndicator(
+            value: homeState.heartRateProgress,
+            color: Colors.red,
+            strokeWidth: 8,
+            backgroundColor: Colors.white10,
+          ),
+        ),
+        SizedBox(
+          width: 50,
+          height: 50,
+          child: CircularProgressIndicator(
+            value: homeState.exerciseProgress,
+            color: Colors.blue,
+            strokeWidth: 8,
+            backgroundColor: Colors.white10,
+          ),
+        ),
+        const Column(
+          children: [
+            Icon(
+              Icons.local_fire_department,
+              color: MyColors.primaryRed,
+              size: 20,
+            ),
+            Text(
+              "2250 kcal",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildStrengthCountdownCard() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -528,57 +582,6 @@ class HomeView extends ConsumerWidget {
     );
   }
 
-  // POPULAR WORKOUTS
-  Widget _buildPopularWorkouts() {
-    return SizedBox(
-      height: 180,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          _popularItem(
-            "Strength",
-            "60 Exercises",
-            "assets/images/training0.png",
-          ),
-          _popularItem("Cardio", "15 Exercises", "assets/images/training1.jpg"),
-        ],
-      ),
-    );
-  }
-
-  Widget _popularItem(String t, String s, String i) {
-    return Container(
-      width: 280,
-      margin: const EdgeInsets.only(right: 15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        image: DecorationImage(image: AssetImage(i), fit: BoxFit.cover),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(25),
-          color: Colors.black45,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              t,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(s, style: const TextStyle(color: Colors.white70)),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildPremiumBanner() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -628,7 +631,6 @@ class HomeView extends ConsumerWidget {
   }
 }
 
-// YARDIMCI WIDGET'LAR
 class _ProgressRow extends StatelessWidget {
   final IconData icon;
   final String val;

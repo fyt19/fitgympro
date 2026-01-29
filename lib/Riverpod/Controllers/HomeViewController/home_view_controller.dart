@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/legacy.dart';
 
 class HomeState {
   final bool isPremium;
-  final String userName;
+  final String userName; // userName hatası için bu alan şart
   final double sleepProgress;
   final double heartRateProgress;
   final double exerciseProgress;

@@ -1,4 +1,5 @@
 import 'package:fitgympro/Riverpod/Controllers/HomeViewController/home_view_controller.dart';
+import 'package:fitgympro/Riverpod/Controllers/ProfileController/profile_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'SplashController/splash_view_controller.dart';
@@ -20,5 +21,10 @@ class AllControllers {
   static final homeViewController =
       StateNotifierProvider<HomeViewController, HomeState>(
         (ref) => HomeViewController(),
+      );
+
+  static final profileController =
+      StateNotifierProvider<ProfileController, ProfileState>(
+        (ref) => ProfileController(),
       );
 }

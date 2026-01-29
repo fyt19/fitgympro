@@ -1,3 +1,4 @@
+import 'package:fitgympro/View/MainWrapper/main_wrapper.dart';
 import 'package:flutter/material.dart';
 import '../../View/SplashView/splash_view.dart';
 import '../../View/OnboardView/onboard_view.dart';
@@ -15,7 +16,8 @@ class AppRoutes {
   static Map<String, Widget Function(BuildContext)> routes = {
     splash: (_) => const SplashView(),
     onboard: (_) => const OnboardView(),
-    home: (_) => const HomeView(),
+    // home: (_) => const HomeView(),
+    '/home': (_) => const MainWrapper(),
     notifications: (_) => const NotificationsView(),
   };
 }
